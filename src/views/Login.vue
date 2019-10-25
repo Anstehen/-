@@ -63,7 +63,8 @@ export default {
     // 登录
     ssigninClick(e){
       let self = this;
-      self.$router.push({path:'Broker',query:{paan:'111'}})
+      self.$router.push({path:'Broker',query:{paan:'111'}});
+      // self.$router.push({path:'Brokeraevel',query:{paan:'111'}});
     }
   }
 };

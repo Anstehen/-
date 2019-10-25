@@ -1,7 +1,7 @@
 <template>
   <div id="borker">
       <div class="headline">
-        <span class="headline_span">孔雀计划券商主页</span>
+        <span class="headline_span">A级券商主页</span>
       </div>
       <div class="underline"></div>
       <div class="topbac">
@@ -20,16 +20,12 @@
             </div>
           </div>
           <div class="mapa_right">
-            <img class="mapa_right_img" src="../assets/images/peacockCity.png" alt="印章">
+            <img class="mapa_right_img" src="../assets/images/levelPrint.png" alt="印章">
           </div>
         </div>
       </div>
       <div class="btn">
-        <div class="btn_left" @click="extension">
-          <span class="btn_left_bac"></span>
-          <span class="btn_left_span">A级商券推广码</span>
-        </div>
-        <div class="btn_right" @click="merchant">
+        <div class="btn_right">
           <span class="btn_right_bac"></span>
           <span class="btn_right_span">商户推广码</span>
         </div>
@@ -37,17 +33,7 @@
       <div class="list">
         <div class="list_bag">
           <div class="list_page">
-            <div class="list_page_model" @click="brokerOne">
-              <div class="lpm_bac" v-if="brokerNumber==1"></div>
-              <span :class="brokerNumber?'lpm_span':'lpm_spanOne'">A级商券一览</span>
-            </div>
-            <div class="list_page_line">
-              <div class="lpl"></div>
-            </div>
-            <div class="list_page_model" @click="brokerTwo">
-              <div class="lpm_bac" v-if="!brokerNumber"></div>
-              <span :class="!brokerNumber?'lpm_span':'lpm_spanOne'">商家一览</span>
-            </div>
+            <span class="list_page_span">商家一览</span>
           </div>
           <div class="entry">
             <div class="entry_top">
@@ -55,7 +41,7 @@
               <span class="et_two">10人</span>
             </div>
             <div class="entry_bot">
-              <div  class="entry_bot_bag">
+              <div class="entry_bot_bag">
                 <div class="entry_bot_model" v-for="item in listArr">
                   <div class="ebm_left">
                     <div class="el_left">
@@ -91,26 +77,7 @@ export default {
     };
   },
   methods:{
-    // A级商券一览
-    brokerOne(){
-      let self = this;
-      self.brokerNumber = true;
-    },
-    // 商家一览
-    brokerTwo(){
-      let self = this;
-      self.brokerNumber = false;
-    },
-    // A级商券推广码
-    extension(){
-      let self = this;
-      self.$router.push({path:'Invitation',query:{code:1}});
-    },
-    // 商户推广码
-    merchant(){
-      let self = this;
-      self.$router.push({path:'Invitation',query:{code:2}});
-    }
+    
   }
 };
 </script>
@@ -251,8 +218,8 @@ export default {
         width: auto;
         height: 100%;
         .mapa_right_img{
-          width: px2rem(142);
-          height: px2rem(114);
+          width: px2rem(158);
+          height: px2rem(56);
         }
       }
     }
@@ -262,33 +229,7 @@ export default {
     width: 100%;
     height: px2rem(164);
     margin-top: px2rem(108);
-    .btn_left{
-      @include box_two();
-      width:px2rem(220);
-      height:px2rem(64);
-      background:linear-gradient(270deg,rgba(255,58,138,1) 0%,rgba(255,2,2,1) 100%);
-      border-radius:px2rem(4);
-      position: relative;
-      .btn_left_bac{
-        width:px2rem(202);
-        height:px2rem(64);
-        position: absolute;
-        top: px2rem(8);
-        z-index: -1;
-        background:linear-gradient(270deg,rgba(255,58,138,1) 0%,rgba(255,2,2,1) 100%);
-        border-radius:px2rem(4);
-        opacity:0.28;
-        filter:blur(px2rem(4));
-      }
-      .btn_left_span{
-        font-size:px2rem(28);
-        font-weight:500;
-        color:rgba(255,255,255,1);
-        line-height:px2rem(40);
-      }
-    }
     .btn_right{
-      margin-left: px2rem(98);
       @include box_two();
       width:px2rem(220);
       height:px2rem(64);
@@ -326,43 +267,14 @@ export default {
       box-shadow:0 px2rem(2) px2rem(18) 0 rgba(206,206,210,0.46);
       border-radius:px2rem(8);
       .list_page{
-        @include box_nine();
+        @include box_two();
         width: 100%;
         height: px2rem(88);
-        .list_page_model{
-          @include box_two();
-          width: 49%;
-          height: 100%;
-          position: relative;
-          .lpm_bac{
-            position: absolute;
-            bottom: 0;
-            width:px2rem(182);
-            height:px2rem(4);
-            background:rgba(53,59,80,1);
-            border-radius:px2rem(2);
-          }
-          .lpm_span{
+        .list_page_span{
             font-size:px2rem(32);
-            font-weight:bold;
+            font-weight:500;
             color:rgba(53,59,80,1);
             line-height:px2rem(44);
-          }
-          .lpm_spanOne{
-            font-size:px2rem(32);
-            color:rgba(53,59,80,1);
-            line-height:px2rem(44);
-          }
-        }
-        .list_page_line{
-          @include box_two();
-          width: 2%;
-          height: 100%;
-          .lpl{
-            width:px2rem(2);
-            height:px2rem(48);
-            background:rgba(203,205,216,0.54);
-          }
         }
       }
       .entry{//列表循环
