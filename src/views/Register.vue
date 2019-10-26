@@ -31,9 +31,12 @@
       <div class="code">
           <div class="code_page">
               <input class="cp_ipt" type="number"  @input="codeIpt" placeholder="请输入验证码">
-              <div class="cp_div" v-if="wetherShowBtn">获取验证码</div>
-              <span class="cp_span" v-else>剩余 30 s</span>
+              <div class="cp_div" v-if="wetherShowBtn" @click="huoquyanzhengmaClick">获取验证码</div>
+              <span class="cp_span" v-else>剩余 {{yzmNumber}} s</span>
           </div>
+      </div>
+      <div class="makesure">
+          <div class="makesure_page" @click="diquxuanzeClick">确定</div>
       </div>
       <div class="name">
           <div class="name_one">名称</div>
@@ -44,12 +47,32 @@
               </div>
           </div>
       </div>
-      <div class="city">城市选择</div>
-      <div class="choice">
-
+      <div class="city" v-if="diquShow">城市选择</div>
+      <div class="choice" v-if="diquShow">
+          <div :class="distingguish==1?'choice_modelOne':'choice_model'" @click="cityClick">
+              <div class="chmo_left">{{cityTitle}}</div>
+              <div class="chmo_right">
+                  <img class="chmo_right_img" src="../assets/images/triangle.png" alt="三角形">
+              </div>
+          </div>
+          <div :class="distingguish==1?'choice_modelOne':'choice_model'" @click="provinceClick">
+              <div class="chmo_left">{{provinceTitle}}</div>
+              <div class="chmo_right">
+                  <img class="chmo_right_img" src="../assets/images/triangle.png" alt="三角形">
+              </div>
+          </div>
+          <div class="choice_model" @click="areaClick" v-if="distingguish==2">
+              <div class="chmo_left">{{areaTitle}}</div>
+              <div class="chmo_right">
+                  <img class="chmo_right_img" src="../assets/images/triangle.png" alt="三角形">
+              </div>
+          </div>
+          <van-action-sheet v-model="cityShow" :actions="cityArr" @select="citySelect" />
+          <van-action-sheet v-model="provinceShow" :actions="provinceArr" @select="provinceSelect" />
+          <van-action-sheet v-model="areaShow" :actions="areaArr" @select="areaSelect" />
       </div>
-      <div class="city">商铺信息</div>
-      <div class="shops">
+      <div class="city" v-if="distingguish==2">商铺信息</div>
+      <div class="shops" v-if="distingguish==2">
           <div class="shops_model">
               <input class="sm_ipt" type="text"  @input="shposIpt" placeholder="请输入店铺名称">
           </div>
@@ -88,14 +111,125 @@ export default {
       nameNumber:'',
       shopsNumber:'',
       identifierNumber:'',
-      wetherShowBtn:true,
+      wetherShowBtn:true,//获取验证码显隐
+      yzmNumber:60,
+      yanHandel:'',
+      diquShow:false,//区域选择显隐
       listArr:[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}],
+      cityShow: false,
+      cityTitle:'请选择',
+      cityObj:{},
       cityArr:[],
+      provinceShow: false,
+      provinceTitle:'请选择',
+      provinceObj:{},
       provinceArr:[],
+      areaShow: false,
+      areaTitle:'请选择',
+      areaObj:{},
       areaArr:[],
     };
   },
   methods:{
+    // 省选择
+    citySelect(item) {
+      let self = this;
+      // 默认情况下，点击选项时不会自动关闭菜单
+      // 可以通过 close-on-click-action 属性开启自动关闭
+    //   console.log(item);
+      this.cityShow = false;
+      self.cityTitle = item.name;
+      self.cityObj = item;
+      // Toast(item.name);
+      let obj = '';
+      for(let i in self.cityArr){
+          if(self.cityArr[i].name == self.cityTitle){
+            //   console.log(self.cityArr[i]);
+            obj =  cityJson[self.cityArr[i].code];
+          }
+      }
+      function findKey (value, compare = (a, b) => a === b) {
+        return Object.keys(obj).find(k => compare(obj[k], value))
+      }
+      var arr = [];
+      for (let i in obj) {
+        let o = {};
+        o[i] = obj[i];
+        o['name'] = obj[i];
+        o['code'] = findKey(obj[i]);
+        arr.push(o)
+      }
+      self.provinceArr = arr;
+        
+    },
+    cityClick(){
+        let self = this;
+        self.cityShow = true;
+    },
+    // 市选择
+    provinceSelect(item) {
+      let self = this;
+      // 默认情况下，点击选项时不会自动关闭菜单
+      // 可以通过 close-on-click-action 属性开启自动关闭
+    //   console.log(item);
+      self.provinceShow = false;
+      self.provinceTitle = item.name;
+      self.provinceObj = item;
+    //   Toast(item.name);
+      let obj = '';
+      for(let i in self.provinceArr){
+          if(self.provinceArr[i].name == self.provinceTitle){
+            //   console.log(self.provinceArr[i]);
+            obj =  cityJson[self.provinceArr[i].code];
+          }
+      }
+      function findKey (value, compare = (a, b) => a === b) {
+        return Object.keys(obj).find(k => compare(obj[k], value))
+      }
+      var arr = [];
+      for (let i in obj) {
+        let o = {};
+        o[i] = obj[i];
+        o['name'] = obj[i];
+        o['code'] = findKey(obj[i]);
+        arr.push(o)
+      }
+    //   console.log(arr);
+      self.areaArr = arr;
+    },
+    provinceClick(){
+        let self = this;
+        if(self.provinceArr.length == 0){
+            alert('请选择省')
+        }else{
+            self.provinceShow = true;
+        }      
+    },
+    // 区选择
+    areaSelect(item) {
+      let self = this;
+      // 默认情况下，点击选项时不会自动关闭菜单
+      // 可以通过 close-on-click-action 属性开启自动关闭
+      self.areaShow = false;
+      self.areaTitle = item.name;
+      self.areaObj = item;
+    //   console.log(item);
+    //   console.log(self.areaTitle);
+    //   Toast(item.name);
+    },
+    areaClick(){
+        let self = this;
+        if(self.areaArr.length == 0){
+            alert('请选择省市')
+        }else{
+            self.areaShow = true;
+        }
+    },
+    // 去定按钮显示地区选择
+    diquxuanzeClick:function(){
+        let self = this;
+        self.diquShow = true;
+    },
     // 输入手机号
     phoneIpt(e){
       let self = this;
@@ -109,6 +243,26 @@ export default {
       //e.target 指向了dom元素
       // console.log(e.target.value);
       self.codeNumber = e.target.value;
+    },
+    // 输入验证码点击
+    huoquyanzhengmaClick(){
+        let self = this;
+        self.wetherShowBtn = false;
+        self.countNumberClick(self);
+    },
+    // 计数
+    countNumberClick(val){
+      let self = val;
+      if(self.yzmNumber == 0){
+        self.yzmNumber = 60;
+        self.wetherShowBtn = true;
+        clearInterval(self.yanHandel);
+      }else{
+        self.yanHandel = setTimeout(function(){
+          self.yzmNumber = self.yzmNumber - 1;
+          self.countNumberClick(self);
+        }, 1000);
+      }
     },
     // 请输入名称
     nameIpt(e){
@@ -135,26 +289,31 @@ export default {
     registerClick:function(){
         let self = this; 
         self.$router.push({path:'Payment',query:{paan:'111'}});
-    },
-    changeProduct(event){
-        console.log(event)
     }
 },
   mounted(){
-      let self = this;  
-    //   console.log(cityJson['100000']);
-      let dataObj =  cityJson['100000'];
-      let arr = []
-      for (let i in dataObj) {
-        arr.push(dataObj[i]); //属性
-     }
-     self.cityArr = arr;
-      let parameter = self.$route.query;
-      if(parameter.code == 1 || parameter.code == '1'){// A级商券推广码
-          self.distingguish = 1;
-      }else if(parameter.code == 2 || parameter.code == '2'){// 商户推广码
-          self.distingguish = 2;
-      }
+    let self = this;
+    // 省份数组处理
+    let obj =  cityJson['100000'];
+    function findKey (value, compare = (a, b) => a === b) {
+        return Object.keys(obj).find(k => compare(obj[k], value))
+    }
+    var arr = [];
+    for (let i in obj) {
+        let o = {};
+        o[i] = obj[i];
+        o['name'] = obj[i];
+        o['code'] = findKey(obj[i]);
+        arr.push(o)
+    }
+    self.cityArr = arr;
+    // 页面传参处理
+    let parameter = self.$route.query;
+    if(parameter.paan == 1 || parameter.paan == '1'){// 孔雀计划A级券商注册
+        self.distingguish = 1;
+    }else if(parameter.paan == 2 || parameter.paan == '2'){// 孔雀计划五星服务站注册
+        self.distingguish = 2;
+    }
   }
 };
 </script>
@@ -388,6 +547,23 @@ export default {
                 }
             }
         }
+        .makesure{//确定按钮
+            @include box_three();
+            margin-top: px2rem(32);
+            width: 100%;
+            height: px2rem(64);
+            .makesure_page{
+                @include box_three();
+                width:px2rem(218);
+                height:px2rem(64);
+                background:rgba(92,127,238,1);
+                border-radius:px2rem(8);
+                font-size:px2rem(28);
+                font-weight:400;
+                color:rgba(255,255,255,1);
+                line-height:px2rem(40);
+            }
+        }
         .name{//名称
             @include box_seven();
             margin-top: px2rem(40);
@@ -447,11 +623,64 @@ export default {
             width: 100%;
             height: px2rem(76);
             .choice_model{
-                width:px2rem(230);
+                @include box_four();
+                width:px2rem(216);
                 height:px2rem(76);
+                margin-left: px2rem(12);
                 background:rgba(255,255,255,0.15);
-                box-shadow:0px 0px 6px 0px rgba(0,0,0,0.16);
-                border-radius:4px;
+                box-shadow:0 0 px2rem(6) 0 rgba(0,0,0,0.16);
+                border-radius:px2rem(4);
+                overflow: hidden;
+                .chmo_left{
+                    @include box_three();
+                    width: px2rem(172);
+                    height: 100%;
+                    font-size:px2rem(32);
+                    font-weight:400;
+                    color:rgba(129,139,158,1);
+                    line-height:px2rem(44);
+                }
+                .chmo_right{
+                   @include box_three();
+                   width: px2rem(44);
+                   height: 100%; 
+                   .chmo_right_img{
+                       width: px2rem(24);
+                       height:px2rem(16);
+                   }
+                }
+            }
+            .choice_modelOne{
+                @include box_four();
+                width:px2rem(310);
+                height:px2rem(76);
+                margin-left: px2rem(12);
+                background:rgba(255,255,255,0.15);
+                box-shadow:0 0 px2rem(6) 0 rgba(0,0,0,0.16);
+                border-radius:px2rem(4);
+                overflow: hidden;
+                .chmo_left{
+                    @include box_three();
+                    width: px2rem(266);
+                    height: 100%;
+                    font-size:px2rem(32);
+                    font-weight:400;
+                    color:rgba(129,139,158,1);
+                    line-height:px2rem(44);
+                }
+                .chmo_right{
+                   @include box_three();
+                   width: px2rem(44);
+                   height: 100%; 
+                   .chmo_right_img{
+                       width: px2rem(24);
+                       height:px2rem(16);
+                   }
+                }
+            }
+            .van-action-sheet__item{
+                height: px2rem(130);
+                font-size: px2rem(36);
             }
         }
         .shops{//商铺信息

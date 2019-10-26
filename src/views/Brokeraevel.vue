@@ -10,13 +10,13 @@
       <div class="material">
         <div class="material_page">
           <div class="mapa_left">
-            <img class="mapa_left_img" src="../assets/images/peacockCity.png" alt="头像">
+            <img class="mapa_left_img" :src="touxaing" alt="头像" v-if="touxaing!=''">
             <div class="paleim">
               <div class="paleim_top">
-                <span class="paleim_top_spanOne">博文先生</span>
-                <span class="paleim_top_spanTwo">浙1533</span>
+                <span class="paleim_top_spanOne">{{mingzi}}</span>
+                <span class="paleim_top_spanTwo">{{hongsefangkang}}</span>
               </div>
-              <span class="paleim_bot">浙江杭州</span>
+              <span class="paleim_bot">{{diqu}}</span>
             </div>
           </div>
           <div class="mapa_right">
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="btn">
-        <div class="btn_right">
+        <div class="btn_right" @click="merchant">
           <span class="btn_right_bac"></span>
           <span class="btn_right_span">商户推广码</span>
         </div>
@@ -38,26 +38,28 @@
           <div class="entry">
             <div class="entry_top">
               <span class="et_one">已邀请：</span>
-              <span class="et_two">10人</span>
+              <span class="et_two">{{yaoqingrenshu}}</span>
             </div>
             <div class="entry_bot">
-              <div class="entry_bot_bag">
+              <div  class="entry_bot_bag">
                 <div class="entry_bot_model" v-for="item in listArr">
                   <div class="ebm_left">
                     <div class="el_left">
-                      <img src="" alt="">
+                      <img :src="item.avatar" alt="">
                     </div>
                     <div class="el_center">
                       <div class="elc_top">
-                        <span class="elc_top_spanOne">Lsabella</span>
-                        <span class="elc_top_spanTwo">05-0453</span>
+                        <span class="elc_top_spanOne">{{item.name}}</span>
+                        <span class="elc_top_spanTwo">{{item.id}}</span>
                       </div>
-                      <div class="elc_bot">浙江杭州</div>
+                      <div class="elc_bot">{{item.addressProvince}}{{item.addressCity}}{{item.addressArea}}</div>
                     </div>
                   </div>
                   <div class="ebm_right">
-                    <span class="ebm_right_spanOne">2019/10/25</span>
-                    <span class="ebm_right_spanTwo">成功注册</span>
+                    <span class="ebm_right_spanOne">{{item.createTime}}</span>
+                    <span class="ebm_right_spanTwo" v-if="item.status==0">成功注册</span>
+                    <span class="ebm_right_spanTwo" v-else-if="item.status==2">未支付</span>
+                    <span class="ebm_right_spanTwo" v-else>银联审核中</span>
                   </div>
                 </div>
               </div>     
@@ -73,11 +75,84 @@ export default {
   data() {
     return {
       brokerNumber:true,
-      listArr:[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}],
+      listArr:[],
+      touxaing:'',
+      mingzi:'',
+      hongsefangkang:'',
+      diqu:'',
+      yaoqingrenshu:0,
+      chuanzhi:0
     };
   },
   methods:{
-    
+    // 商户推广码
+    merchant(){
+      let self = this;
+      self.$router.push({path:'Invitation',query:{code:2,paraNumber:self.chuanzhi}});
+    }
+  },
+   mounted(){
+    let self = this;
+    let parameter = self.$route.query;
+    // console.log(parameter);
+    let acceptPhoneNumber = parameter.paan;
+    let para = {
+          mobile:acceptPhoneNumber
+        }
+    self.$axios.post('/cityPartnerMerchant/selectByMobile',para)
+      .then(resp => {
+        // console.log(resp);
+        if(resp.data.code == 0){
+          let dataObj = resp.data.info;
+          let arrTwo = [];
+          // 商家一览
+          if(dataObj.yCityPartnerMerchantList && dataObj.yCityPartnerMerchantList != null && dataObj.yCityPartnerMerchantList != ''){
+            arrTwo = dataObj.yCityPartnerMerchantList;
+          }
+          self.listArr = arrTwo;
+          // 头像
+          let strOne = '';
+          if(dataObj.yCityPartner.avatar && dataObj.yCityPartner.avatar != null && dataObj.yCityPartner.avatar != ''){
+            strOne = dataObj.yCityPartner.avatar;
+          }
+          self.touxaing = strOne;
+          // 名字
+          let strTwo = '暂无';
+          if(dataObj.yCityPartner.name && dataObj.yCityPartner.name != null && dataObj.yCityPartner.name != ''){
+            strTwo = dataObj.yCityPartner.name;
+          }
+          self.mingzi = strTwo;
+          // 红色方框
+          let strThree = '';
+          if(dataObj.yCityPartner.id && dataObj.yCityPartner.id != null && dataObj.yCityPartner.id != ''){
+            strThree = dataObj.yCityPartner.id;
+          }
+          self.hongsefangkang = strThree;
+          // 地区
+          let strFour = '';
+          if(dataObj.address && dataObj.address != null && dataObj.address != ''){
+            strFour = dataObj.address;
+          }
+          self.diqu = strFour;
+          // 邀请人数
+          let strFive = '';
+          if(dataObj.partnerCount && dataObj.partnerCount != null && dataObj.partnerCount != ''){
+            strFive = dataObj.partnerCount;
+          }
+          self.yaoqingrenshu = strFive;
+          // 传入下级页面的值
+          let strNumber = 0;
+          if(dataObj.yCityPartner.no && dataObj.yCityPartner.no != null && dataObj.yCityPartner.no != ''){
+            strNumber = dataObj.yCityPartner.no;
+          }
+          self.chuanzhi = strNumber;
+        }else{
+          alert('请求出错，请稍后再试');
+        }
+      }).catch(err => {
+        // console.log(err);
+        alert('请求出错，请稍后再试!');
+    })
   }
 };
 </script>

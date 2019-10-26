@@ -13,17 +13,17 @@
         <span class="phone_spanOne">+86</span>
         <img class="phone_img" src="../assets/images/triangle.png" alt="三角形">
         <span class="phone_spanTwo"></span>
-        <input class="phone_ipt" type="number" maxlength="11" @input="phoneIpt" placeholder="请输入手机号">
+        <input class="phone_ipt" type="number" maxlength="11" @input="phoneIpt">
       </div>
       <div class="underline_one"><div class="underline_one_line"></div></div>
       <div class="words_one">请输入验证码</div>
       <div class="code">
         <div class="code_page">
-          <input class="code_page_ipt" type="number" @input="codeIpt" placeholder="请输入验证码">
+          <input class="code_page_ipt" type="number" @input="codeIpt">
           <div class="code_page_right">
             <span class="cpr_spanOne"></span>
-            <!-- <span class="cpr_spanTwo">重新发送(30s)</span> -->
-            <span class="cpr_spanThree">发送验证码</span>
+            <span class="cpr_spanTwo" v-if="codeShow==1">重新发送({{codeNumberCount}}s)</span>
+            <span class="cpr_spanThree" @click="sendCode" v-if="codeShow==0">发送验证码</span>
           </div>
         </div>
       </div>
@@ -37,10 +37,14 @@
 
 <script>
 export default {
+  name: "Login",
   data() {
     return {
       phoneNumber:'',
       codeNumber:'',
+      codeShow:0,
+      codeNumberCount:60,
+      codeTimeout:'',
     };
   },
   methods:{
@@ -60,12 +64,87 @@ export default {
       self.codeNumber = e.target.value;
       // console.log(self.codeNumber);
     },
+    // 计数
+    countNumberClick(val){
+      let self = val;
+      if(self.codeNumberCount == 0){
+        self.codeNumberCount = 60;
+        self.codeShow = 0;
+        clearInterval(self.codeTimeout);
+      }else{
+        self.codeTimeout = setTimeout(function(){
+          self.codeNumberCount = self.codeNumberCount - 1;
+          self.countNumberClick(self);
+        }, 1000);
+      }
+    },
+    // 发送验证码
+    sendCode(){
+      let self = this;
+      if(self.phoneNumber.length != 11){
+        alert("请输入正确的手机号");
+      }else{
+        let para = {
+          mobile:self.phoneNumber
+        }
+        self.$axios.post('/cityPartnerMerchant/sendVerifyCode',para)
+          .then(resp => {
+            // console.log(resp);
+            if(resp.data.code == 0){
+              self.codeShow = 1;
+              self.countNumberClick(self);
+            }else if(resp.data.code == 10006){
+              alert(resp.data.message);
+            }else if(resp.data.code == 10003){
+              alert(resp.data.message);
+            }
+          }).catch(err => {
+            // console.log(err);
+            alert('请求出错，请稍后再试');
+        })
+      }
+      
+    },
     // 登录
     ssigninClick(e){
       let self = this;
-      self.$router.push({path:'Broker',query:{paan:'111'}});
+      // self.$router.push({path:'Broker',query:{paan:'111'}});
       // self.$router.push({path:'Brokeraevel',query:{paan:'111'}});
+      let phoNum = self.phoneNumber;
+      let codNum = self.codeNumber;
+      phoNum = 15669039706;
+      codNum = 123;
+      if(String(phoNum).length != 11 || String(codNum).length == 0){
+        alert('手机号或验证码不正确');
+      }else{
+        let para = {
+          mobile:phoNum,
+          registCode:codNum
+        }
+        self.$axios.post('/cityPartnerMerchant/login',para)
+          .then(resp => {
+            // console.log(resp);
+            if(resp.data.code == 0){
+              if(resp.data.info.role == 1 || resp.data.info.role == '1'){//城市合伙人
+                self.$router.push({path:'Broker',query:{paan:phoNum}});
+              }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
+                self.$router.push({path:'Brokeraevel',query:{paan:phoNum}});
+              }
+            }else if(resp.data.code == 10003){
+              alert(resp.data.message);
+            }else{
+              alert('请求出错，请稍后再试');
+            }
+          }).catch(err => {
+            // console.log(err);
+            alert('请求出错，请稍后再试');
+        })
+      }
     }
+  },
+  mounted(){
+      let self = this;
+      
   }
 };
 </script>
