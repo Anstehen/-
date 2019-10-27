@@ -4,7 +4,7 @@ import Login from "./views/Login.vue";
 import Broker from "./views/Broker.vue";
 import Brokeraevel from "./views/Brokeraevel.vue";
 import Invitation from "./views/Invitation.vue";
-import Register from "./views/Register.vue";
+import R from "./views/R.vue";
 import Payment from "./views/Payment.vue";
 
 Vue.use(Router);
@@ -32,9 +32,9 @@ export default new Router({
       component: Invitation
     },
     {
-      path: "/register",
-      name: "register",
-      component: Register
+      path: "/r",
+      name: "r",
+      component: R
     },
     {
       path: "/payment",

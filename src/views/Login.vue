@@ -112,8 +112,8 @@ export default {
       // self.$router.push({path:'Brokeraevel',query:{paan:'111'}});
       let phoNum = self.phoneNumber;
       let codNum = self.codeNumber;
-      phoNum = 15669039706;
-      codNum = 123;
+      // phoNum = 15669039706;
+      // codNum = 123;
       if(String(phoNum).length != 11 || String(codNum).length == 0){
         alert('手机号或验证码不正确');
       }else{

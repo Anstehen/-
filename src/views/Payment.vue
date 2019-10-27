@@ -13,7 +13,7 @@
           </div>
       </div>
       <div class="btn">
-          <div class="btn_page">
+          <div class="btn_page" @click="querenzhifu">
               <span class="btn_page_span">确认支付</span>
               <div class="btp_bac"></div>
           </div>
@@ -26,19 +26,46 @@
 export default {
   data() {
     return {
-      
+      zhifucanshu:'',
     };
   },
   methods:{
-    // 注册按钮点击
-    registerClick:function(){
-        let self = _this; 
-        
+    // 确认支付点击
+    querenzhifu:function(){
+        let self = this; 
+        console.log(self.zhifucanshu)
+        let para = `/chinaumsPay/merchantRegisterPay?orderNo=${self.zhifucanshu}`
+        self.$axios.get(para)
+        .then(resp => {
+            // console.log(resp);
+            if(resp.data.code == 0){             
+                
+            }
+        }).catch(err => {
+            // console.log(err);
+            alert('请求出错，请稍后再试');
+       })
     }
   },
   mounted(){
       let self = this;  
-
+      //console.log(localStorage.getItem("temp"));//输出
+      let pageNumber = localStorage.getItem("temp");
+      let para = {
+        userNo:pageNumber,
+      }
+      self.$axios.post('/chinaumsPay/createMerchantRegisterOrder',para)
+      .then(resp => {
+            // console.log(resp);
+            if(resp.data.code == 0){  
+                if(resp.data.info.orderNo && resp.data.info.orderNo != undefined && resp.data.info.orderNo != null && resp.data.info.orderNo != null){
+                    self.zhifucanshu = resp.data.info.orderNo;
+                }
+            }
+      }).catch(err => {
+            // console.log(err);
+            alert('请求出错，请稍后再试');
+      })
   }
 };
 </script>
