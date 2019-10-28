@@ -320,8 +320,19 @@ export default {
             self.$axios.post('/cityPartnerMerchant/getVerifyCode',para)
             .then(resp => {
                 // console.log(resp);
-                self.countNumberClick(self);
-                self.wetherShowBtn = false;
+                if(resp.data.code == 0){
+                    self.countNumberClick(self);
+                    self.wetherShowBtn = false;
+                }else if(resp.data.code == 10003){
+                    alert(resp.data.message);
+                }else if(resp.data.code == 10006){
+                    alert('验证码发送太频繁');
+                }else if(resp.data.code == 10002){
+                    alert('验证码不正确');
+                }else{
+                    alert('请求出错，请稍后再试');
+                }
+                
             }).catch(err => {
                 // console.log(err);
                 alert('请求出错，请稍后再试');
