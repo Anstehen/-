@@ -141,8 +141,8 @@ export default {
           self.diqu = strFour;
           // 邀请人数
           let strFive = '';
-          if(dataObj.partnerCount && dataObj.partnerCount != null && dataObj.partnerCount != ''){
-            strFive = dataObj.partnerCount;
+          if(dataObj.brokerCount && dataObj.brokerCount != null && dataObj.brokerCount != ''){
+            strFive = dataObj.brokerCount;
           }
           self.yaoqingrenshu = strFive;
           // 传入下级页面的值
