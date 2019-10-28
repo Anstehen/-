@@ -1,9 +1,9 @@
 <template>
   <div id="borker">
-      <div class="headline">
+      <!-- <div class="headline">
         <span class="headline_span">A级券商主页</span>
       </div>
-      <div class="underline"></div>
+      <div class="underline"></div> -->
       <div class="topbac">
         <img class="topbac_img" src="../assets/images/peacockTopBac.png" alt="背景图">
       </div>
@@ -57,9 +57,14 @@
                   </div>
                   <div class="ebm_right">
                     <span class="ebm_right_spanOne">{{item.createTime}}</span>
-                    <span class="ebm_right_spanTwo" v-if="item.status==0">成功注册</span>
-                    <span class="ebm_right_spanTwo" v-else-if="item.status==2">未支付</span>
-                    <span class="ebm_right_spanTwo" v-else>银联审核中</span>
+                    <div class="xiangyou">
+                      <span class="ebm_right_spanTwo" v-if="item.status==0||item.status=='0'">银联签约成功</span>
+                      <span class="ebm_right_spanTwo" v-else-if="item.status==2||item.status=='2'">未支付</span>
+                      <span class="ebm_right_spanTwo" v-else-if="item.status==3||item.status==4||item.status=='3'||item.status=='4'">银联签约资料未提交</span>
+                      <span class="ebm_right_spanTwo" v-else-if="item.status==5||item.status=='5'">银联签约审核中</span>
+                      <span class="ebm_right_spanTwo" v-else-if="item.status==9||item.status=='9'">银联签约失败</span>
+                      <span class="ebm_right_spanTwo" v-else></span>
+                    </div>              
                   </div>
                 </div>
               </div>     
@@ -201,7 +206,9 @@ export default {
 #borker{
   @include box_one();
   width: 100%;
-  height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
   position: relative;
   .headline{//标题
     @include box_two();
@@ -232,7 +239,7 @@ export default {
   .material{//用户信息
     @include box_two();
     position: absolute;
-    top: px2rem(256);
+    top: px2rem(180);
     left: 0;
     width: 100%;
     height: px2rem(176);
@@ -303,7 +310,7 @@ export default {
     @include box_eight();
     width: 100%;
     height: px2rem(164);
-    margin-top: px2rem(108);
+    margin-top: px2rem(176);
     .btn_right{
       @include box_two();
       width:px2rem(220);
@@ -443,12 +450,17 @@ export default {
                   color:rgba(115,123,140,1);
                   line-height:px2rem(34);
                 }
-                .ebm_right_spanTwo{
-                  margin-left: px2rem(32);
-                  font-size:px2rem(24);
-                  font-weight:400;
-                  color:rgba(115,123,140,1);
-                  line-height:px2rem(34);
+                .xiangyou{
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row-reverse;
+                  .ebm_right_spanTwo{
+                    margin-left: px2rem(32);
+                    font-size:px2rem(24);
+                    font-weight:400;
+                    color:rgba(115,123,140,1);
+                    line-height:px2rem(34);
+                  }
                 }
               }
             }

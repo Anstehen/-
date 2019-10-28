@@ -6,6 +6,7 @@ import Brokeraevel from "./views/Brokeraevel.vue";
 import Invitation from "./views/Invitation.vue";
 import R from "./views/R.vue";
 import Payment from "./views/Payment.vue";
+import Aggreement from "./views/Aggreement.vue";
 
 Vue.use(Router);
 
@@ -40,6 +41,11 @@ export default new Router({
       path: "/payment",
       name: "payment",
       component: Payment
+    },
+    {
+      path: "/aggreement",
+      name: "aggreement",
+      component: Aggreement
     },
     {
       path: "/about",

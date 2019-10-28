@@ -1,9 +1,9 @@
 <template>
   <div id="borker">
-      <div class="headline">
+      <!-- <div class="headline">
         <span class="headline_span">孔雀计划券商主页</span>
       </div>
-      <div class="underline"></div>
+      <div class="underline"></div> -->
       <div class="topbac">
         <img class="topbac_img" src="../assets/images/peacockTopBac.png" alt="背景图">
       </div>
@@ -97,7 +97,8 @@ export default {
       hongsefangkang:'',
       diqu:'',
       yaoqingrenshu:0,
-      chuanzhi:0
+      chuanzhi:0,
+      allData:{},
     };
   },
   methods:{
@@ -106,12 +107,14 @@ export default {
       let self = this;
       self.brokerNumber = true;
       self.listArr = self.ajiquanshangArr;
+      self.yaoqingrenshu = self.allData.partnerCount;
     },
     // 商家一览
     brokerTwo(){
       let self = this;
       self.brokerNumber = false;
       self.listArr = self.shangjiayilanArr;
+      self.yaoqingrenshu = self.allData.brokerCount;
     },
     // A级商券推广码
     extension(){
@@ -139,6 +142,7 @@ export default {
           let arrOne = [];
           let arrTwo = [];
           let dataObj = resp.data.info;
+          self.allData = dataObj;
           // A级券商一览
           if(dataObj.yCityPartnerList && dataObj.yCityPartnerList != null && dataObj.yCityPartnerList != ''){
             arrOne = dataObj.yCityPartnerList;
@@ -241,7 +245,9 @@ export default {
 #borker{
   @include box_one();
   width: 100%;
-  height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
   position: relative;
   .headline{//标题
     @include box_two();
@@ -272,7 +278,7 @@ export default {
   .material{//用户信息
     @include box_two();
     position: absolute;
-    top: px2rem(256);
+    top: px2rem(176);
     left: 0;
     width: 100%;
     height: px2rem(176);
@@ -343,7 +349,7 @@ export default {
     @include box_eight();
     width: 100%;
     height: px2rem(164);
-    margin-top: px2rem(108);
+    margin-top: px2rem(176);
     .btn_left{
       @include box_two();
       width:px2rem(220);

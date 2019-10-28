@@ -5,16 +5,18 @@
             <img class="func_left_img" src="../assets/images/codeBtnPoster.png" alt="海报">
             <span class="func_left_span">保存海报</span>
         </div>
-        <div class="func_right" @click="linkClick">
+        <!-- <div class="func_right" @click="linkClick">
             <img class="func_right_img" src="../assets/images/codeBtnShare.png" alt="分享">
             <span class="func_right_span">分享链接</span>
-        </div>
+        </div> -->
     </div>
     <div class="shouji" v-if="tanchukaungShow">
         <div class="shouji_one"></div>
         <div class="shouji_two">
+            <div class="shtw_three">长按保存图片，微信扫码识别</div>
             <div class="shtw_one">
-                <img class="shtw_one_img" :src="imgUrl">
+                <div class="shtw_two_span" v-if="imgUrl==''">海报生成中...</div>
+                <img class="shtw_one_img" :src="imgUrl" v-else>
             </div>
             <div class="shtw_two">
                 <img class="shtw_two_img" src="../assets/images/quxiao.png" @click="guanbitankuang">
@@ -22,10 +24,10 @@
         </div>
     </div> 
     <!-- <img style="width:100%;height:auto" :src="imgUrl" alt=""> -->
-    <div class="headline">
+    <!-- <div class="headline">
         <span class="headline_span">孔雀计划券邀请码</span>
     </div>
-    <div class="underline"></div>
+    <div class="underline"></div> -->
       <div class="baoguo" ref="imageDom">
             <div class="present">
                 <img class="present_img" src="../assets/images/codeCardBac.png" alt="背景图">
@@ -97,7 +99,8 @@ export default {
     // 分享链接
     linkClick(){
         let self = this;
-        self.$router.push({path:'R',query:{p:'2'}});
+        // self.$router.push({path:'R',query:{p:'2'}});
+        alert('使用微信打开，点击右上角分享')
     }
   },
   mounted(){
@@ -149,7 +152,7 @@ export default {
         })
       }else if(parameter.code == 2 || parameter.code == '2'){// 商户推广码
         self.distingguish = 2;
-        let paraOne = `/cityPartnerMerchant/getPopularlizeBroker?no=${parameter.paraNumber}`;
+        let paraOne = `/cityPartnerMerchant/getPopularlizeMerchant?no=${parameter.paraNumber}`;
         self.$axios.get(paraOne)
         .then(resp => {
             // console.log(resp);
@@ -260,7 +263,6 @@ export default {
                     position: absolute;
                     top: 0;
                     left: 0;
-                    z-index: -1;
                 }
                 .present_one{
                     @include box_four();
@@ -319,10 +321,10 @@ export default {
                 .card_img{
                     width: 100%;
                     height: px2rem(560);
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: -1;
+                    // position: absolute;
+                    // top: 0;
+                    // left: 0;
+                    // z-index: -1;
                 }
                 .card_count{
                     @include box_three();
@@ -330,6 +332,7 @@ export default {
                     height: px2rem(358);
                     background: #6AC6CD;
                     border-radius: px2rem(12);
+                    position: absolute;
                     .card_count_img{
                         width: px2rem(356);
                         height: px2rem(356);
@@ -398,7 +401,7 @@ export default {
                 z-index: 100;
                 .func_left{
                     @include box_two();
-                    width:px2rem(258);
+                    width:91.47%;
                     height:px2rem(76);
                     background:linear-gradient(270deg,rgba(112,216,219,1) 0%,rgba(66,207,207,1) 100%);
                     border-radius:px2rem(4);
@@ -414,25 +417,25 @@ export default {
                         line-height:px2rem(40);
                     }
                 }
-                .func_right{
-                    @include box_two();
-                    margin-left: px2rem(56);
-                    width:px2rem(258);
-                    height:px2rem(76);
-                    background:linear-gradient(270deg,rgba(82,168,199,1) 0%,rgba(65,151,201,1) 100%);
-                    border-radius:px2rem(4);
-                    .func_right_img{
-                        width: px2rem(36);
-                        height: px2rem(36);
-                    }
-                    .func_right_span{
-                        margin-left: px2rem(6);
-                        font-size:px2rem(28);
-                        font-weight:400;
-                        color:rgba(255,255,255,1);
-                        line-height:px2rem(40);
-                    }
-                }
+                // .func_right{
+                //     @include box_two();
+                //     margin-left: px2rem(56);
+                //     width:px2rem(258);
+                //     height:px2rem(76);
+                //     background:linear-gradient(270deg,rgba(82,168,199,1) 0%,rgba(65,151,201,1) 100%);
+                //     border-radius:px2rem(4);
+                //     .func_right_img{
+                //         width: px2rem(36);
+                //         height: px2rem(36);
+                //     }
+                //     .func_right_span{
+                //         margin-left: px2rem(6);
+                //         font-size:px2rem(28);
+                //         font-weight:400;
+                //         color:rgba(255,255,255,1);
+                //         line-height:px2rem(40);
+                //     }
+                // }
             }
             .shouji{//图片弹框
                 @include box_three();
@@ -454,11 +457,30 @@ export default {
                     position: absolute;
                     top: 10%;
                     left: 4.27%;
+                    .shtw_three{
+                        @include box_three();
+                        width: 100%;
+                        height: 5%;
+                        font-size:px2rem(28);
+                        font-weight:500;
+                        color:rgba(53,59,80,1);
+                        line-height:px2rem(40);
+                        background: #FFFFFF;
+                    }
                     .shtw_one{
                         width: 100%;
-                        height: 95%;
+                        height: 90%;
+                        background: #FFFFFF;
                         overflow-x: hidden;
                         overflow-y: scroll;
+                        .shtw_two_span{
+                            margin-top: 45%;
+                            margin-left: 35%;
+                            font-size:px2rem(28);
+                            font-weight:500;
+                            color:rgba(53,59,80,1);
+                            line-height:px2rem(40);
+                        }
                         .shtw_one_img{
                             width: 100%;
                             height: auto;

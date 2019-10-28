@@ -1,5 +1,6 @@
 // vue.config.js
 module.exports = {
+  baseUrl: './',
   css: {
     loaderOptions: {
       // 给 sass-loader 传递选项

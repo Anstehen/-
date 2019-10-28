@@ -1,9 +1,9 @@
 <template>
   <div id="login">
-      <div class="headline">
+      <!-- <div class="headline">
         <span class="headline_span">手机验证</span>
       </div>
-      <div class="underline"></div>
+      <div class="underline"></div> -->
       <div class="introduce">
         <img class="introduce_img" src="../assets/images/print.png" alt="美在中国">
         <span class="introduce_text">欢迎登陆美在中国商券主页</span>
@@ -13,7 +13,7 @@
         <span class="phone_spanOne">+86</span>
         <img class="phone_img" src="../assets/images/triangle.png" alt="三角形">
         <span class="phone_spanTwo"></span>
-        <input class="phone_ipt" type="number" maxlength="11" @input="phoneIpt">
+        <input class="phone_ipt" :value="phoneNumber" type="number" maxlength="11" @input="phoneIpt">
       </div>
       <div class="underline_one"><div class="underline_one_line"></div></div>
       <div class="words_one">请输入验证码</div>
@@ -130,8 +130,20 @@ export default {
               }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
                 self.$router.push({path:'Brokeraevel',query:{paan:phoNum}});
               }
+              let lingpai = '';
+              if(resp.data.info.token && resp.data.info.token != undefined && resp.data.info.token != null && resp.data.info.token != ''){
+                lingpai = resp.data.info.token;
+              }
+              // localStorage.setItem("token",lingpai);
+              // localStorage.setItem("tel",phoNum);
+              document.cookie=`tel=${phoNum}`;
+              document.cookie=`token=${lingpai}`;
             }else if(resp.data.code == 10003){
               alert(resp.data.message);
+            }else if(resp.data.code == 10006){
+              alert('验证码发送太频繁');
+            }else if(resp.data.code == 10002){
+              alert('验证码不正确');
             }else{
               alert('请求出错，请稍后再试');
             }
@@ -144,7 +156,79 @@ export default {
   },
   mounted(){
       let self = this;
-      
+      // 公用函数
+      function chulihanshu(val){
+        if(val && val != undefined && val != null && val != ''){
+          return true
+        }else{
+          return false
+        }    
+      }
+      // 获取处理 cookie
+      // document.cookie=`token=${1231231}`;
+      // document.cookie=`tel=${1561}`;
+      var getCookie = document.cookie;
+      if(getCookie.indexOf(';') != -1){//手机号，token都存在
+        let getArr = getCookie.split(';');
+        let getTel = getArr[0];
+        let getToken = getArr[1];
+        let strTel = getArr[0].split('=')[1];
+        let strToken = getArr[1].split('=')[1];
+        if(chulihanshu(strTel) && chulihanshu(strToken)){
+          self.phoneNumber = strTel;
+          let para = {
+            token:strToken,
+          }
+          self.$axios.post('/cityPartnerMerchant/getInfoByToken',para)
+            .then(resp => {
+              // console.log(resp);
+              if(resp.data.code == 0){
+                if(resp.data.info.role == 1 || resp.data.info.role == '1'){//城市合伙人
+                  self.$router.push({path:'Broker',query:{paan:strTel}});
+                }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
+                  self.$router.push({path:'Brokeraevel',query:{paan:strTel}});
+                }
+              }else{
+                alert('请求出错，请稍后再试');
+              }
+            }).catch(err => {
+              // console.log(err);
+              alert('请求出错，请稍后再试');
+          })
+        }
+      }
+      // 缓存
+      // localStorage.setItem("token",lingpai);
+      // localStorage.setItem("tel",phoNum);
+      // if(chulihanshu(localStorage.getItem("tel"))){
+      //   self.phoneNumber = localStorage.getItem("tel");
+      // }
+      // if(chulihanshu(localStorage.getItem("token")) && chulihanshu(localStorage.getItem("tel"))){
+      //   let para = {
+      //     token:localStorage.getItem("token"),
+      //   }
+      //   self.$axios.post('/cityPartnerMerchant/getInfoByToken',para)
+      //     .then(resp => {
+      //       // console.log(resp);
+      //       if(resp.data.code == 0){
+      //         if(resp.data.info.role == 1 || resp.data.info.role == '1'){//城市合伙人
+      //           console.log(resp.data.info.role)
+      //           console.log('111111')
+      //           self.$router.push({path:'Broker',query:{paan:localStorage.getItem("tel")}});
+      //         }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
+      //           console.log(resp.data.info.role)
+      //           console.log(resp.data.info.role)
+      //           console.log('aaaaaa')
+      //           self.$router.push({path:'Brokeraevel',query:{paan:localStorage.getItem("tel")}});
+      //         }
+      //       }else{
+      //         alert('请求出错，请稍后再试');
+      //       }
+      //     }).catch(err => {
+      //       // console.log(err);
+      //       alert('请求出错，请稍后再试');
+      //   })
+      // }
   }
 };
 </script>

@@ -1,9 +1,9 @@
 <template>
   <div id="invitation">
-      <div class="headline">
+      <!-- <div class="headline">
         <span class="headline_span">孔雀计划券邀请码</span>
       </div>
-      <div class="underline"></div>
+      <div class="underline"></div> -->
       <div class="present">
           <img class="present_img" src="../assets/images/registerBac.png" alt="背景图">
           <div class="present_one">
@@ -20,13 +20,13 @@
       </div>
       <div class="words">
           <span class="words_left">手机验证</span>
-          <div v-if="distingguish==2">
-                <span class="words_right" v-if="shifouyanzhengshoujihao==2||shifouyanzhengshoujihao=='2'"></span>
-                <span class="words_right" v-else-if="shifouyanzhengshoujihao==3||shifouyanzhengshoujihao=='3'||shifouyanzhengshoujihao==4||shifouyanzhengshoujihao=='4'">资料未提交</span>
-                <span class="words_right" v-else-if="shifouyanzhengshoujihao==9||shifouyanzhengshoujihao=='9'">签约失败</span>
-                <span class="words_right" v-else-if="shifouyanzhengshoujihao==0||shifouyanzhengshoujihao=='0'">签约成功</span>
-                <span class="words_right" v-else-if="shifouyanzhengshoujihao==5||shifouyanzhengshoujihao=='5'">审核中</span>
-                <span class="words_right" v-else></span>
+          <div class="words_right" v-if="distingguish==2">
+                <span v-if="shifouyanzhengshoujihao==2||shifouyanzhengshoujihao=='2'">未支付</span>
+                <span v-else-if="shifouyanzhengshoujihao==3||shifouyanzhengshoujihao=='3'||shifouyanzhengshoujihao==4||shifouyanzhengshoujihao=='4'">银联签约资料未提交</span>
+                <span v-else-if="shifouyanzhengshoujihao==9||shifouyanzhengshoujihao=='9'">银联签约失败</span>
+                <span v-else-if="shifouyanzhengshoujihao==0||shifouyanzhengshoujihao=='0'">银联签约成功</span>
+                <span v-else-if="shifouyanzhengshoujihao==5||shifouyanzhengshoujihao=='5'">银联签约审核中</span>
+                <span v-else></span>
           </div>
       </div>
       <div class="phone">
@@ -43,15 +43,17 @@
               <span class="cp_span" v-else>剩余 {{yzmNumber}} s</span>
           </div>
       </div>
-      <div class="makesure" v-if="distingguish == 2">
+      <!-- <div class="makesure" v-if="distingguish == 2"> -->
+      <div class="makesure">
           <div class="makesure_page" @click="diquxuanzeClick">确定</div>
       </div>
       <div class="name">
           <div class="name_one">名称</div>
           <div class="name_two">
-              <img class="name_two_img" src="../assets/images/registerFawn.png" alt="头像">
+              <!-- <img class="name_two_img" src="../assets/images/registerFawn.png" alt="头像"> -->
               <div class="name_two_div">
-                  <input class="ntd_ipt" type="text"  @input="nameIpt" :value="nameNumber" placeholder="请输入名称">
+                  <div class="ntd_ipt" v-if="!shifoujinyong">{{nameNumber}}</div>
+                  <input class="ntd_ipt" type="text"  @input="nameIpt" :value="nameNumber" placeholder="请输入名称" v-if="shifoujinyong">
               </div>
           </div>
       </div>
@@ -119,14 +121,19 @@
       </div>
       <!-- A级券商 -->
       <div class="btn" v-if="distingguish==1">
-          <div class="btn_page" @click="ajiquanshang">
+          <!-- 注册成功 -->
+          <div class="btn_page" @click="ajiquanshangqueding" v-if="shifouyanzhengshoujihao==0||shifouyanzhengshoujihao=='0'">
+              <span class="bp_span">确 定</span>
+              <div class="bp_bac"></div>
+          </div>
+          <div class="btn_page" @click="ajiquanshang" v-else>
               <span class="bp_span">注 册</span>
               <div class="bp_bac"></div>
           </div>
       </div>
       <div class="agree">
-          <span class="agree_spanOne">注册代表您已同意</span>
-          <span class="agree_spanTwo">《XXX协议》</span>
+          <span class="agree_spanOne" @click="aggreementClick">注册代表您已同意</span>
+          <span class="agree_spanTwo" @click="aggreementClick">《孔雀计划线上合作协议》</span>
       </div>
       <div class="bank" v-if="listArr.length!=0">
           <div class="bank_page">
@@ -170,9 +177,20 @@ export default {
       areaArr:[],
       shifouyanzhengshoujihao:100,//确认按钮点击之后的状态
       shifoujinyong:true,//是否禁止输入框输入
+      dlsPhone:'',//代理商电话号
+      shanghuID:'',//商户id
+      jintuyemianqingqiudeid:'',//进入页面请求的id 
+      suodingshoujihao:'',//锁定手机号
+      shifouqinayue:100,//是否可以签约
+      message:'',//提示信息
     };
   },
   methods:{
+    //   协议点击
+    aggreementClick(){
+        let self = this;
+        self.$router.push({path:'Aggreement'});
+    },
     // 省选择
     citySelect(item) {
       let self = this;
@@ -328,58 +346,93 @@ export default {
     diquxuanzeClick:function(){
         let self = this;
         let shouji = self.phoneNumber;
-        if(shouji.length != 11){
-            alert('请输入正确的手机号');
+        let yanzhengma = self.codeNumber;
+        let shenfen = 0;
+        // type:2//券商；type:3//五星服务站
+        if(self.distingguish == 1){// 孔雀计划A级券商注册
+            shenfen = 2;
+        }else if(self.distingguish == 2){// 孔雀计划五星服务站注册
+            shenfen = 3;
+        }
+        if(shouji.length != 11 || self.codeNumber.length == 0){
+            alert('请输入正确的手机号和验证码');
         }else{
-            shouji = 15669039706;
-            let para = `/cityPartnerMerchant/getMerchant?mobile=${shouji}`;
+            // shouji = 15669039706;
+            let para = `/cityPartnerMerchant/getMerchant?mobile=${shouji}&msgCode=${yanzhengma}&type=${shenfen}`;
             self.$axios.get(para)
             .then(resp => {
                 // console.log(resp);
                 if(resp.data.code == 0){
+                    // 锁定手机号
+                    self.suodingshoujihao = self.phoneNumber;
                     // 注册按钮处理
-                    let dataHande = resp.data.info;
-                    let yanzheng = 100;
-                    if(dataHande.yCityPartnerMerchant.status&&dataHande.yCityPartnerMerchant.status!=undefined&&dataHande.yCityPartnerMerchant.status!=null&&dataHande.yCityPartnerMerchant.status!=''){
-                        yanzheng = dataHande.yCityPartnerMerchant.status;
+                    let dataHande = resp.data.info;               
+                    // 是否可以签约
+                    if(dataHande.registerStopFlag && dataHande.registerStopFlag != undefined && dataHande.registerStopFlag != null && dataHande.registerStopFlag != null){
+                        self.shifouqinayue = dataHande.registerStopFlag;
                     }
-                    if(yanzheng==0||yanzheng==3||yanzheng==4||yanzheng==5||yanzheng==9){
-                        self.shifoujinyong = false;
+                    // 提示信息
+                    if(dataHande.registerStopMessage && dataHande.registerStopMessage != undefined && dataHande.registerStopMessage != null && dataHande.registerStopMessage != null){
+                        self.message = dataHande.registerStopMessage;
                     }
-                    self.shifouyanzhengshoujihao = yanzheng;
-                    // 名称
-                    if(dataHande.yCityPartnerMerchant.name&&dataHande.yCityPartnerMerchant.name!=undefined&&dataHande.yCityPartnerMerchant.name!=null){
-                        self.nameNumber = dataHande.yCityPartnerMerchant.name;
+                    if(dataHande.yCityPartnerMerchant == undefined || dataHande.yCityPartnerMerchant == null || dataHande.yCityPartnerMerchant == ''){//没有注册过
+                        self.shifouyanzhengshoujihao = 2;
+                        alert('您是新用户，请完善资料进行注册');
+                    }else{
+                        let yanzheng = 100;
+                        if(dataHande.yCityPartnerMerchant.status&&dataHande.yCityPartnerMerchant.status!=undefined&&dataHande.yCityPartnerMerchant.status!=null&&dataHande.yCityPartnerMerchant.status!=''){
+                            yanzheng = dataHande.yCityPartnerMerchant.status;
+                        }
+                        if(yanzheng==0||yanzheng==3||yanzheng==4||yanzheng==5||yanzheng==9){
+                            self.shifoujinyong = false;
+                        }
+                        self.shifouyanzhengshoujihao = yanzheng;
+                        // 名称
+                        if(dataHande.yCityPartnerMerchant.name&&dataHande.yCityPartnerMerchant.name!=undefined&&dataHande.yCityPartnerMerchant.name!=null){
+                            self.nameNumber = dataHande.yCityPartnerMerchant.name;
+                        }
+                        // 省
+                        if(dataHande.yCityPartnerMerchant.addressProvince&&dataHande.yCityPartnerMerchant.addressProvince!=undefined&&dataHande.yCityPartnerMerchant.addressProvince!=null){
+                            self.cityTitle = dataHande.yCityPartnerMerchant.addressProvince;
+                        }
+                        if(dataHande.yCityPartnerMerchant.addressProvinceCode&&dataHande.yCityPartnerMerchant.addressProvinceCode!=undefined&&dataHande.yCityPartnerMerchant.addressProvinceCode!=null){
+                            self.cityObj = {'code':dataHande.yCityPartnerMerchant.addressProvinceCode};
+                        }
+                        // 市
+                        if(dataHande.yCityPartnerMerchant.addressCity&&dataHande.yCityPartnerMerchant.addressCity!=undefined&&dataHande.yCityPartnerMerchant.addressCity!=null){
+                            self.provinceTitle = dataHande.yCityPartnerMerchant.addressCity;
+                        }
+                        if(dataHande.yCityPartnerMerchant.addressCityCode&&dataHande.yCityPartnerMerchant.addressCityCode!=undefined&&dataHande.yCityPartnerMerchant.addressCityCode!=null){
+                            self.provinceObj = {'code':dataHande.yCityPartnerMerchant.addressCityCode};
+                        }
+                        // 区
+                        if(dataHande.yCityPartnerMerchant.addressArea&&dataHande.yCityPartnerMerchant.addressArea!=undefined&&dataHande.yCityPartnerMerchant.addressArea!=null){
+                            self.areaTitle = dataHande.yCityPartnerMerchant.addressArea;
+                        }
+                        if(dataHande.yCityPartnerMerchant.addressAreaCode&&dataHande.yCityPartnerMerchant.addressAreaCode!=undefined&&dataHande.yCityPartnerMerchant.addressAreaCode!=null){
+                            self.areaObj = {'code':dataHande.yCityPartnerMerchant.addressAreaCode};
+                        }
+                        // 店铺名称
+                        if(dataHande.yCityPartnerMerchant.mctName&&dataHande.yCityPartnerMerchant.mctName!=undefined&&dataHande.yCityPartnerMerchant.mctName!=null){
+                            self.shopsNumber = dataHande.yCityPartnerMerchant.mctName;
+                        }
+                        // 营业执照编号
+                        if(dataHande.yCityPartnerMerchant.mctLicenseId&&dataHande.yCityPartnerMerchant.mctLicenseId!=undefined&&dataHande.yCityPartnerMerchant.mctLicenseId!=null){
+                            self.identifierNumber = dataHande.yCityPartnerMerchant.mctLicenseId;
+                        }
+                        // 商户 ID
+                        if(dataHande.yCityPartnerMerchant.mctId&&dataHande.yCityPartnerMerchant.mctId!=undefined&&dataHande.yCityPartnerMerchant.mctId!=null&&dataHande.yCityPartnerMerchant.mctId!=''){
+                            self.shanghuID = dataHande.yCityPartnerMerchant.mctId;
+                        }
                     }
-                    // 省
-                    if(dataHande.yCityPartnerMerchant.addressProvince&&dataHande.yCityPartnerMerchant.addressProvince!=undefined&&dataHande.yCityPartnerMerchant.addressProvince!=null){
-                        self.cityTitle = dataHande.yCityPartnerMerchant.addressProvince;
-                    }
-                    if(dataHande.yCityPartnerMerchant.addressProvinceCode&&dataHande.yCityPartnerMerchant.addressProvinceCode!=undefined&&dataHande.yCityPartnerMerchant.addressProvinceCode!=null){
-                        self.cityObj = {'code':dataHande.yCityPartnerMerchant.addressProvinceCode};
-                    }
-                    // 市
-                    if(dataHande.yCityPartnerMerchant.addressCity&&dataHande.yCityPartnerMerchant.addressCity!=undefined&&dataHande.yCityPartnerMerchant.addressCity!=null){
-                        self.provinceTitle = dataHande.yCityPartnerMerchant.addressCity;
-                    }
-                    if(dataHande.yCityPartnerMerchant.addressCityCode&&dataHande.yCityPartnerMerchant.addressCityCode!=undefined&&dataHande.yCityPartnerMerchant.addressCityCode!=null){
-                        self.provinceObj = {'code':dataHande.yCityPartnerMerchant.addressCityCode};
-                    }
-                    // 区
-                    if(dataHande.yCityPartnerMerchant.addressArea&&dataHande.yCityPartnerMerchant.addressArea!=undefined&&dataHande.yCityPartnerMerchant.addressArea!=null){
-                        self.areaTitle = dataHande.yCityPartnerMerchant.addressArea;
-                    }
-                    if(dataHande.yCityPartnerMerchant.addressAreaCode&&dataHande.yCityPartnerMerchant.addressAreaCode!=undefined&&dataHande.yCityPartnerMerchant.addressAreaCode!=null){
-                        self.areaObj = {'code':dataHande.yCityPartnerMerchant.addressAreaCode};
-                    }
-                    // 店铺名称
-                    if(dataHande.yCityPartnerMerchant.mctName&&dataHande.yCityPartnerMerchant.mctName!=undefined&&dataHande.yCityPartnerMerchant.mctName!=null){
-                        self.shopsNumber = dataHande.yCityPartnerMerchant.mctName;
-                    }
-                    // 营业执照编号
-                    if(dataHande.yCityPartnerMerchant.mctLicenseId&&dataHande.yCityPartnerMerchant.mctLicenseId!=undefined&&dataHande.yCityPartnerMerchant.mctLicenseId!=null){
-                        self.identifierNumber = dataHande.yCityPartnerMerchant.mctLicenseId;
-                    }
+                }else if(resp.data.code == 1001){
+                    alert('手机号或验证码不正确');
+                }else if(resp.data.code == 10006){
+                    alert('验证码发送太频繁');
+                }else if(resp.data.code == 10002){
+                    alert('验证码不正确');
+                }else{
+                     alert('请求出错，请稍后再试!');
                 }
             }).catch(err => {
                 // console.log(err);
@@ -411,12 +464,34 @@ export default {
     // 五星服务张---在线签约
     zaixianqianyue(){
         let self = this;
-
+        // let para = `/chinaumsPay/H5merchantRegister?mctId=${self.shanghuID}`
+        // self.$axios.get(para);
+        if(self.shifouqinayue == 1 || self.shifouqinayue == '1'){
+            alert(self.message);
+            return
+        }
+        let para = {
+            mctId:self.shanghuID
+        }
+        self.$axios.post('/chinaumsPay/H5merchantRegister',para)
+        .then(resp => {
+                // console.log(resp);
+                if(resp.data.code == 0){
+                    let jumpUrl = '';
+                    if(resp.data.info.url && resp.data.info.url != undefined && resp.data.info.url != null && resp.data.info.url != ''){
+                        jumpUrl = resp.data.info.url;
+                    }
+                    window.location.href = jumpUrl;
+                }
+        }).catch(err => {
+                // console.log(err);
+                alert('请求出错，请稍后再试');
+        })
     },
     // 五星服务张---联系代理商
     lianxidailishang(){
         let self = this;
-        // alert(`请拨打${}联系代理商`)
+        alert(`请拨打${dlsPhone}联系代理商`);
     },
     // 五星服务张---确定
     quedingClick(){
@@ -430,7 +505,11 @@ export default {
             alert('请验证手机号');
             return
         }
-        let yanzhengma = self.codeNumber;//验证码
+        if(self.suodingshoujihao != self.phoneNumber){
+            alert('手机号发生改变，请从新输入验证码');
+            return
+        }
+        // let yanzhengma = self.codeNumber;//验证码
         let name = self.nameNumber;//名字
         let cheng = self.cityTitle;//省名
         let chengCode = self.cityObj.code;//省名 code
@@ -441,13 +520,15 @@ export default {
         let shouji = self.phoneNumber;//手机号
         let dizhi = self.cityTitle+self.provinceTitle+self.areaTitle;//地址
         let shangji = self.shopsNumber;//商家
-        let tjr = self.tuijianid;//推荐人 id
+        let tjr = self.jintuyemianqingqiudeid;//推荐人 id
         let yingye = self.identifierNumber;//营业执照
         if(shouji.length != 11){
             alert('请输入正确的手机号');
-        }else if(yanzhengma.length == 0){
-            alert('请输入验证码');
-        }else if(name.length == 0){
+        }
+        // else if(yanzhengma.length == 0){
+        //     alert('请输入验证码');
+        // }
+        else if(name.length == 0){
             alert('请输入名称');
         }else if(cheng == '请选择'){
             alert('请选择省份');
@@ -461,7 +542,7 @@ export default {
             alert('请输入营业执照编号');
         }else{
             let para = {
-                msgCode:yanzhengma,
+                // msgCode:yanzhengma,
                 name:name,
                 addressProvince:cheng,
                 addressProvinceCode:chengCode,
@@ -481,6 +562,10 @@ export default {
                 if(resp.data.code == 0){             
                     localStorage.setItem("temp",resp.data.info.no); //存入 参数： 1.调用的值 2.所要存入的数据 
                     self.$router.push({path:'Payment'});
+                }else if(resp.data.code == 10006){
+                    alert('验证码发送太频繁');
+                }else if(resp.data.code == 10002){
+                    alert('验证码不正确');
                 }
             }).catch(err => {
                 // console.log(err);
@@ -488,21 +573,34 @@ export default {
             })
         }
     },
+    // A级券商---确定
+    ajiquanshangqueding(){
+        let self = this;
+         self.$router.push({path:'Brokeraevel',query:{paan:self.phoneNumber}});
+    },
     // A级券商---注册
     ajiquanshang(){
         let self = this;
+        if(self.shifouyanzhengshoujihao == 100){
+            alert('请验证手机号');
+            return
+        }
+        if(self.suodingshoujihao != self.phoneNumber){
+            alert('手机号发生改变，请从新输入验证码');
+            return
+        }
         let yanzhengma = self.codeNumber;//验证码
         let name = self.nameNumber;//名字
         let cheng = self.cityTitle;//省名
         let chengCode = self.cityObj.code;//省名 code
         let shi = self.provinceTitle;//市
         let shiCode = self.provinceObj.code;//市 code
-        let qu = self.areaTitle;//区 
-        let quCode = self.areaObj.code;//区 code
+        // let qu = self.areaTitle;//区 
+        // let quCode = self.areaObj.code;//区 code
         let shouji = self.phoneNumber;//手机号
         let dizhi = self.cityTitle+self.provinceTitle+self.areaTitle;//地址
         let shangji = self.shopsNumber;//商家
-        let tjr = self.tuijianid;//推荐人 id
+        let tjr = self.jintuyemianqingqiudeid;//推荐人 id
         let yingye = self.identifierNumber;//营业执照
         if(shouji.length != 11){
             alert('请输入正确的手机号');
@@ -522,8 +620,8 @@ export default {
                 addressProvinceCode:chengCode,
                 addressCity:shi,
                 addressCityCode:shiCode,
-                addressArea:qu,
-                addressAreaCode:quCode,
+                // addressArea:qu,
+                // addressAreaCode:quCode,
                 mobile:shouji,
                 parentId:tjr,
             }
@@ -532,6 +630,14 @@ export default {
                 // console.log(resp);
                 if(resp.data.code == 0){
                     self.$router.push({path:'Brokeraevel',query:{paan:self.phoneNumber}});
+                }else if(resp.data.code == 10003){
+                    alert(resp.data.message);
+                }else if(resp.data.code == 10006){
+                    alert('验证码发送太频繁');
+                }else if(resp.data.code == 10002){
+                    alert('验证码不正确');
+                }else{
+                    alert('请求出错，请稍后再试');
                 }
             }).catch(err => {
                 // console.log(err);
@@ -584,6 +690,14 @@ export default {
         // console.log(resp);
         if(resp.data.code == 0){
           let dataObj = resp.data.info; 
+          //代理商电话号获取   
+          if(dataObj.agentMobile && dataObj.agentMobile != undefined && dataObj.agentMobile != null && dataObj.agentMobile != ''){
+              self.dlsPhone = dataObj.agentMobile;
+          }  
+          //进入页面请求的id   
+          if(dataObj.yCityPartner.id && dataObj.yCityPartner.id != undefined && dataObj.yCityPartner.id != null && dataObj.yCityPartner.id != ''){
+              self.jintuyemianqingqiudeid = dataObj.yCityPartner.id;
+          } 
           //头像获取   
           if(dataObj.yCityPartner.avatar && dataObj.yCityPartner.avatar != undefined && dataObj.yCityPartner.avatar != null && dataObj.yCityPartner.avatar != ''){
               self.touxiang = dataObj.yCityPartner.avatar;
@@ -688,7 +802,6 @@ export default {
                 position: absolute;
                 top: 0;
                 left: 0;
-                z-index: -1;
             }
             .present_one{
                 @include box_four();
@@ -752,6 +865,8 @@ export default {
                 line-height:px2rem(44);
             }
             .words_right{
+                display: flex;
+                flex-wrap: nowrap;
                 margin-right: 4.27%;
                 font-size:px2rem(32);
                 font-weight:400;
@@ -1039,13 +1154,13 @@ export default {
             height: px2rem(40);
             margin-top: px2rem(28);
             .agree_spanOne{
-                font-size:px2rem(28);
+                font-size:px2rem(22);
                 font-weight:500;
                 color:rgba(53,59,80,1);
                 line-height:px2rem(40);
             }
             .agree_spanTwo{
-                font-size:px2rem(28);
+                font-size:px2rem(22);
                 font-weight:500;
                 color:#5186C0;
                 line-height:px2rem(40);
