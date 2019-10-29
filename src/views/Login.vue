@@ -176,25 +176,25 @@ export default {
         let strToken = getArr[1].split('=')[1];
         if(chulihanshu(strTel) && chulihanshu(strToken)){
           self.phoneNumber = strTel;
-          let para = {
-            token:strToken,
-          }
-          self.$axios.post('/cityPartnerMerchant/getInfoByToken',para)
-            .then(resp => {
-              // console.log(resp);
-              if(resp.data.code == 0){
-                if(resp.data.info.role == 1 || resp.data.info.role == '1'){//城市合伙人
-                  self.$router.push({path:'Broker',query:{paan:strTel}});
-                }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
-                  self.$router.push({path:'Brokeraevel',query:{paan:strTel}});
-                }
-              }else{
-                alert('请求出错，请稍后再试');
-              }
-            }).catch(err => {
-              // console.log(err);
-              alert('请求出错，请稍后再试');
-          })
+          // let para = {
+          //   token:strToken,
+          // }
+          // self.$axios.post('/cityPartnerMerchant/getInfoByToken',para)
+          //   .then(resp => {
+          //     // console.log(resp);
+          //     if(resp.data.code == 0){
+          //       if(resp.data.info.role == 1 || resp.data.info.role == '1'){//城市合伙人
+          //         self.$router.push({path:'Broker',query:{paan:strTel}});
+          //       }else if(resp.data.info.role == 2 || resp.data.info.role == '2'){//A级券商
+          //         self.$router.push({path:'Brokeraevel',query:{paan:strTel}});
+          //       }
+          //     }else{
+          //       alert('请求出错，请稍后再试');
+          //     }
+          //   }).catch(err => {
+          //     // console.log(err);
+          //     alert('请求出错，请稍后再试');
+          // })
         }
       }
       // 缓存
