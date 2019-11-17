@@ -6,7 +6,7 @@
       <div class="underline"></div> -->
       <div class="introduce">
         <img class="introduce_img" src="../assets/images/print.png" alt="美在中国">
-        <span class="introduce_text">欢迎登陆美在中国商券主页</span>
+        <span class="introduce_text">欢迎登陆美在中国券商主页</span>
       </div>
       <div class="words">手机号</div>
       <div class="phone">
