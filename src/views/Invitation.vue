@@ -45,6 +45,15 @@
             </div>
             <div class="card">
                 <img class="card_img" src="../assets/images/codeShareBac.png" alt="背景图">
+                <div class="card_words">
+                    <div class="card_words_left">恭喜您获得：</div>
+                    <!-- <div class="card_words_right">享福计划之 娃哈哈·妙眠  
+                  赠送10瓶 让您睡个好觉</div> -->
+                  <div class="card_words_right">
+                      <span class="card_words_right_one">享福计划之 娃哈哈·妙眠</span>
+                      <span class="card_words_right_two">赠送10瓶 让您睡个好觉</span>
+                  </div>
+                </div>
                 <div class="card_count">
                     <img id="erweima" class="card_count_img" :src="erweima" alt="二维码">
                 </div>
@@ -224,6 +233,10 @@ export default {
         flex-direction: row;
         flex-wrap: wrap;
     }
+    @mixin box_six{
+        display: flex;
+        flex-direction: row;
+    }
     #invitation{
         @include box_one();
         width: 100%;
@@ -325,6 +338,35 @@ export default {
                     // top: 0;
                     // left: 0;
                     // z-index: -1;
+                }
+                .card_words{
+                    @include box_six();
+                    width: px2rem(440);
+                    height: px2rem(68);
+                    position: absolute;
+                    left: 4.27%;
+                    top: px2rem(20);
+                    @mixin add_words{
+                        font-size:px2rem(24);
+                        color:rgba(88,94,107,1);
+                        line-height:px2rem(34);
+                    }
+                    .card_words_left{
+                        @include add_words();
+                        width: px2rem(155);
+                        height: px2rem(68);
+                        font-weight:400;
+                    }
+                    .card_words_right{
+                        @include box_one();
+                        @include add_words();
+                        width: px2rem(305);
+                        height: px2rem(68);
+                        font-weight:bold;
+                        .card_words_right_two{
+                            margin-top: px2rem(6);
+                        }
+                    }
                 }
                 .card_count{
                     @include box_three();
