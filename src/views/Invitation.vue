@@ -45,10 +45,9 @@
             </div>
             <div class="card">
                 <img class="card_img" src="../assets/images/codeShareBac.png" alt="背景图">
+                <img class="card_bottle_img" src="../assets/images/feedingBottle.png" alt="">
                 <div class="card_words">
                     <div class="card_words_left">恭喜您获得：</div>
-                    <!-- <div class="card_words_right">享福计划之 娃哈哈·妙眠  
-                  赠送10瓶 让您睡个好觉</div> -->
                   <div class="card_words_right">
                       <span class="card_words_right_one">享福计划之 娃哈哈·妙眠</span>
                       <span class="card_words_right_two">赠送10瓶 让您睡个好觉</span>
@@ -338,6 +337,13 @@ export default {
                     // top: 0;
                     // left: 0;
                     // z-index: -1;
+                }
+                .card_bottle_img{
+                    position: absolute;
+                    left: px2rem(30);
+                    top: px2rem(56);
+                    width: px2rem(66);
+                    height: px2rem(158);
                 }
                 .card_words{
                     @include box_six();
