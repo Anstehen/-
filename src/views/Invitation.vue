@@ -45,14 +45,14 @@
             </div>
             <div class="card">
                 <img class="card_img" src="../assets/images/codeShareBac.png" alt="背景图">
-                <img class="card_bottle_img" src="../assets/images/feedingBottle.png" alt="">
-                <div class="card_words">
+                <!-- <img class="card_bottle_img" src="../assets/images/feedingBottle.png" alt=""> -->
+                <!-- <div class="card_words">
                     <div class="card_words_left">恭喜您获得：</div>
                   <div class="card_words_right">
                       <span class="card_words_right_one">享福计划之 娃哈哈·妙眠</span>
                       <span class="card_words_right_two">赠送10瓶 让您睡个好觉</span>
                   </div>
-                </div>
+                </div> -->
                 <div class="card_count">
                     <img id="erweima" class="card_count_img" :src="erweima" alt="二维码">
                 </div>
