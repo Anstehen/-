@@ -87,10 +87,10 @@
               <div class="sm_ipt" v-if="!shifoujinyong">{{shopsNumber}}</div>
               <input class="sm_ipt" type="text"  @input="shposIpt" :value="shopsNumber" placeholder="请输入店铺名称" v-if="shifoujinyong">
           </div>
-          <div class="shops_model">
+          <!-- <div class="shops_model">
               <div class="sm_ipt" v-if="!shifoujinyong">{{identifierNumber}}</div>
               <input class="sm_ipt" type="text"  @input="identifierIpt" :value="identifierNumber" placeholder="请输入营业执照编号" v-if="shifoujinyong">
-          </div>
+          </div> -->
       </div>
       <!-- 五星服务站 -->
       <div class="btn" v-if="distingguish==2">
@@ -428,9 +428,9 @@ export default {
                             self.shopsNumber = dataHande.yCityPartnerMerchant.mctName;
                         }
                         // 营业执照编号
-                        if(dataHande.yCityPartnerMerchant.mctLicenseId&&dataHande.yCityPartnerMerchant.mctLicenseId!=undefined&&dataHande.yCityPartnerMerchant.mctLicenseId!=null){
-                            self.identifierNumber = dataHande.yCityPartnerMerchant.mctLicenseId;
-                        }
+                        // if(dataHande.yCityPartnerMerchant.mctLicenseId&&dataHande.yCityPartnerMerchant.mctLicenseId!=undefined&&dataHande.yCityPartnerMerchant.mctLicenseId!=null){
+                        //     self.identifierNumber = dataHande.yCityPartnerMerchant.mctLicenseId;
+                        // }
                         // 商户 ID
                         if(dataHande.yCityPartnerMerchant.mctId&&dataHande.yCityPartnerMerchant.mctId!=undefined&&dataHande.yCityPartnerMerchant.mctId!=null&&dataHande.yCityPartnerMerchant.mctId!=''){
                             self.shanghuID = dataHande.yCityPartnerMerchant.mctId;
@@ -466,12 +466,12 @@ export default {
       self.shopsNumber = e.target.value;
     },
     // 请输入营业执照编号
-    identifierIpt(e){
-      let self = this;
-      //e.target 指向了dom元素
-      // console.log(e.target.value);
-      self.identifierNumber = e.target.value;
-    },
+    // identifierIpt(e){
+    //   let self = this;
+    //   //e.target 指向了dom元素
+    //   // console.log(e.target.value);
+    //   self.identifierNumber = e.target.value;
+    // },
     // 五星服务张---在线签约
     zaixianqianyue(){
         let self = this;
@@ -532,7 +532,7 @@ export default {
         let dizhi = self.cityTitle+self.provinceTitle+self.areaTitle;//地址
         let shangji = self.shopsNumber;//商家
         let tjr = self.jintuyemianqingqiudeid;//推荐人 id
-        let yingye = self.identifierNumber;//营业执照
+        // let yingye = self.identifierNumber;//营业执照
         if(shouji.length != 11){
             alert('请输入正确的手机号');
         }
@@ -549,9 +549,11 @@ export default {
             alert('请选择区域');
         }else if(shangji.length == 0){
             alert('请输入店铺名称');
-        }else if(yingye.length == 0){
-            alert('请输入营业执照编号');
-        }else{
+        }
+        // else if(yingye.length == 0){
+        //     alert('请输入营业执照编号');
+        // }
+        else{
             let para = {
                 // msgCode:yanzhengma,
                 name:name,
@@ -565,7 +567,7 @@ export default {
                 address:dizhi,
                 mctName:shangji,
                 parentId:tjr,
-                mctLicenseId:yingye
+                // mctLicenseId:yingye
             }
             self.$axios.post('/cityPartnerMerchant/merchantRegister',para)
             .then(resp => {
